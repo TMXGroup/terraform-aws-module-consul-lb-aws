@@ -86,6 +86,19 @@ resource "aws_s3_bucket" "consul_lb_access_logs" {
 
   force_destroy = true
 
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm     = "AES256"
+      }
+    }
+  }
+
+  logging {
+    target_bucket = "${var.s3_logging_target}"
+    target_prefix = "${var.lb_bucket_prefix}log/"
+  }
+
   policy = <<POLICY
 {
   "Id": "Policy",
@@ -102,6 +115,20 @@ resource "aws_s3_bucket" "consul_lb_access_logs" {
         "AWS": [
           "${data.aws_elb_service_account.consul_lb_access_logs.arn}"
         ]
+      }
+    },
+    {
+      "Sid": "ForceSSLOnlyAccess",
+      "Effect": "Deny",
+      "Principal": {
+          "AWS": "*"
+      },
+      "Action": "s3:*",
+      "Resource": "arn:aws:s3:::${random_id.vault_lb_access_logs.hex}${var.lb_bucket_prefix != "" ? format("//", var.lb_bucket_prefix) : ""}/*",
+      "Condition": {
+          "Bool": {
+              "aws:SecureTransport": "false"
+          }
       }
     }
   ]
