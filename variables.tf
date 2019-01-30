@@ -72,7 +72,7 @@ variable "lb_logs_enabled" {
   default     = true
 }
 
-variable " s3_logging_target" {
+variable "s3_logging_target" {
   description = "S3 Logging target"
 }
 
