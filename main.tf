@@ -124,7 +124,7 @@ resource "aws_s3_bucket" "consul_lb_access_logs" {
           "AWS": "*"
       },
       "Action": "s3:*",
-      "Resource": "arn:aws:s3:::${random_id.vault_lb_access_logs.hex}${var.lb_bucket_prefix != "" ? format("//", var.lb_bucket_prefix) : ""}/*",
+      "Resource": "arn:aws:s3:::${random_id.consul_lb_access_logs.hex}${var.lb_bucket_prefix != "" ? format("//", var.lb_bucket_prefix) : ""}/*",
       "Condition": {
           "Bool": {
               "aws:SecureTransport": "false"
